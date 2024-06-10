@@ -34,41 +34,36 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
 /* Configure GPIO                                                             */
 /*----------------------------------------------------------------------------*/
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
 
 /** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-     PC3   ------> I2S2_SD
-     PA4   ------> I2S3_WS
-     PA5   ------> SPI1_SCK
-     PA6   ------> SPI1_MISO
-     PA7   ------> SPI1_MOSI
-     PB10   ------> I2S2_CK
-     PC7   ------> I2S3_MCK
-     PA9   ------> USB_OTG_FS_VBUS
-     PA10   ------> USB_OTG_FS_ID
-     PA11   ------> USB_OTG_FS_DM
-     PA12   ------> USB_OTG_FS_DP
-     PC10   ------> I2S3_CK
-     PC12   ------> I2S3_SD
-     PB6   ------> I2C1_SCL
-     PB9   ------> I2C1_SDA
+  * Analog 
+  * Input 
+  * Output
+  * EVENT_OUT
+  * EXTI
+
+  PC3   ------> I2S2_SD
+  PA4   ------> I2S3_WS
+  PA5   ------> SPI1_SCK
+  PA6   ------> SPI1_MISO
+  PA7   ------> SPI1_MOSI
+  PB10   ------> I2S2_CK
+  PC7   ------> I2S3_MCK
+  PA9   ------> USB_OTG_FS_VBUS
+  PA10   ------> USB_OTG_FS_ID
+  PA11   ------> USB_OTG_FS_DM
+  PA12   ------> USB_OTG_FS_DP
+  PC10   ------> I2S3_CK
+  PC12   ------> I2S3_SD
+  PB6   ------> I2C1_SCL
+  PB9   ------> I2C1_SDA
 */
-void MX_GPIO_Init(void)
-{
+
+void MX_GPIO_Init(void) {
 
   GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -204,10 +199,6 @@ void MX_GPIO_Init(void)
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
-
-/* USER CODE BEGIN 2 */
-
-/* USER CODE END 2 */
 
 /**
   * @}
