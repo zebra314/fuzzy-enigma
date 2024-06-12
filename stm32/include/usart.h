@@ -42,24 +42,14 @@
 #include "stm32f4xx_hal.h"
 #include "main.h"
 
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
 extern UART_HandleTypeDef huart2;
 extern DMA_HandleTypeDef hdma_usart2_rx;
-
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
+extern DMA_HandleTypeDef hdma_usart2_tx;
 
 extern void Error_Handler(void);
 
 void MX_USART2_UART_Init(void);
-
-/* USER CODE BEGIN Prototypes */
-
-/* USER CODE END Prototypes */
+void MX_UART2_DMA_Init(void);
 
 #ifdef __cplusplus
 }

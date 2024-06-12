@@ -38,9 +38,16 @@
 
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
+DMA_HandleTypeDef hdma_usart2_tx;
+uint8_t buffer[2000];
+
 
 /* USART2 init function */
-void MX_USART2_UART_Init(void) {
+void MX_USART2_UART_Init(void)
+{
+
+  // Enable peripheral clocks
+  __HAL_RCC_USART2_CLK_ENABLE();
 
   huart2.Instance = USART2;
   huart2.Init.BaudRate = 115200;
@@ -51,13 +58,28 @@ void MX_USART2_UART_Init(void) {
   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
 
-  if (HAL_UART_Init(&huart2) != HAL_OK) {
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
     Error_Handler();
   }
 
-  // Initialize the DMA
+  /* Peripheral interrupt init*/
+  HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(USART2_IRQn);
+
+  // Enable DMA idle interrupt
+  __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
+
+}
+
+// DMA initialization
+void MX_UART2_DMA_Init(void) 
+{
+
+  // DMA controller clock enable
   __HAL_RCC_DMA1_CLK_ENABLE();
 
+  // DMA initialization for USART2 RX
   hdma_usart2_rx.Instance = DMA1_Stream5;
   hdma_usart2_rx.Init.Channel = DMA_CHANNEL_4;
   hdma_usart2_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
@@ -69,19 +91,59 @@ void MX_USART2_UART_Init(void) {
   hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
   hdma_usart2_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
-  if (HAL_DMA_Init(&hdma_usart2_rx) != HAL_OK) {
+  // DMA initialization for USART2 TX
+  hdma_usart2_tx.Instance = DMA1_Stream6;
+  hdma_usart2_tx.Init.Channel = DMA_CHANNEL_4;
+  hdma_usart2_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+  hdma_usart2_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+  hdma_usart2_tx.Init.MemInc = DMA_MINC_ENABLE;
+  hdma_usart2_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+  hdma_usart2_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+  hdma_usart2_tx.Init.Mode = DMA_NORMAL;
+  hdma_usart2_tx.Init.Priority = DMA_PRIORITY_LOW;
+  hdma_usart2_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
+
+  if (HAL_DMA_Init(&hdma_usart2_rx) != HAL_OK)
+  {
     Error_Handler();
   }
 
+  // Link DMA to USART2
   __HAL_LINKDMA(&huart2, hdmarx, hdma_usart2_rx);
+  __HAL_LINKDMA(&huart2, hdmatx, hdma_usart2_tx);
 
+  // DMA interrupt init
   HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
+
   HAL_NVIC_EnableIRQ(DMA1_Stream5_IRQn);
+  HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
 
 }
 
-void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle) {
+/* This function handles DMA1 stream6 global interrupt. */
+void DMA1_Stream6_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_usart2_tx);
+}
 
+void USART2_IRQHandler(void)
+{
+  HAL_UART_IRQHandler(&huart2);
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  
+}
+
+void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
+{
+
+}
+
+void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
+{
   GPIO_InitTypeDef GPIO_InitStruct;
 
   if(uartHandle->Instance==USART2) {
@@ -103,9 +165,10 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle) {
   }
 }
 
-void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle) {
-
-  if(uartHandle->Instance==USART2) {
+void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
+{
+  if(uartHandle->Instance==USART2)
+  {
 
     /* Peripheral clock disable */
     __HAL_RCC_USART2_CLK_DISABLE();
