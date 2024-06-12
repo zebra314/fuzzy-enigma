@@ -31,14 +31,14 @@
   *
   ******************************************************************************
   */
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f4xx_hal.h"
 
-extern void Error_Handler(void);
+/* -------------------------------- Includes -------------------------------- */
+#include "stm32f4xx_hal.h"
 
 /**
   * Initializes the Global MSP.
   */
+
 void HAL_MspInit(void)
 {
   HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_0);

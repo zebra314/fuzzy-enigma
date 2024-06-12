@@ -31,14 +31,15 @@
   *
   ******************************************************************************
   */
-/* Define to prevent recursive inclusion -------------------------------------*/
+
+/* ------------------ Define to prevent recursive inclusion ----------------- */
 #ifndef __usart_H
 #define __usart_H
 #ifdef __cplusplus
  extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
+/* -------------------------------- Includes -------------------------------- */
 #include "stm32f4xx_hal.h"
 #include "main.h"
 
@@ -46,10 +47,8 @@ extern UART_HandleTypeDef huart2;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart2_tx;
 
-extern void Error_Handler(void);
-
 void MX_USART2_UART_Init(void);
-void MX_UART2_DMA_Init(void);
+void MX_USART2_DMA_Init(void);
 
 #ifdef __cplusplus
 }

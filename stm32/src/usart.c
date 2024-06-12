@@ -32,17 +32,16 @@
   ******************************************************************************
   */
 
-/* Includes ------------------------------------------------------------------*/
+/* -------------------------------- Includes -------------------------------- */
 #include "usart.h"
-#include "gpio.h"
 
+/* ----------------------------- Global variables --------------------------- */
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
 DMA_HandleTypeDef hdma_usart2_tx;
-uint8_t buffer[2000];
 
+/* --------------------- Begin of USART2 init functions --------------------- */
 
-/* USART2 init function */
 void MX_USART2_UART_Init(void)
 {
 
@@ -67,13 +66,14 @@ void MX_USART2_UART_Init(void)
   HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(USART2_IRQn);
 
-  // Enable DMA idle interrupt
-  __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
+  // Link DMA to USART2
+  __HAL_LINKDMA(&huart2, hdmarx, hdma_usart2_rx);
+  __HAL_LINKDMA(&huart2, hdmatx, hdma_usart2_tx);
 
 }
 
 // DMA initialization
-void MX_UART2_DMA_Init(void) 
+void MX_USART2_DMA_Init(void) 
 {
 
   // DMA controller clock enable
@@ -87,7 +87,7 @@ void MX_UART2_DMA_Init(void)
   hdma_usart2_rx.Init.MemInc = DMA_MINC_ENABLE;
   hdma_usart2_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
   hdma_usart2_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
-  hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;
+  hdma_usart2_rx.Init.Mode = DMA_NORMAL;
   hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
   hdma_usart2_rx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
@@ -103,14 +103,11 @@ void MX_UART2_DMA_Init(void)
   hdma_usart2_tx.Init.Priority = DMA_PRIORITY_LOW;
   hdma_usart2_tx.Init.FIFOMode = DMA_FIFOMODE_DISABLE;
 
-  if (HAL_DMA_Init(&hdma_usart2_rx) != HAL_OK)
+  if (HAL_DMA_Init(&hdma_usart2_tx) != HAL_OK || 
+      HAL_DMA_Init(&hdma_usart2_rx) != HAL_OK )
   {
     Error_Handler();
   }
-
-  // Link DMA to USART2
-  __HAL_LINKDMA(&huart2, hdmarx, hdma_usart2_rx);
-  __HAL_LINKDMA(&huart2, hdmatx, hdma_usart2_tx);
 
   // DMA interrupt init
   HAL_NVIC_SetPriority(DMA1_Stream5_IRQn, 0, 0);
@@ -121,7 +118,29 @@ void MX_UART2_DMA_Init(void)
 
 }
 
-/* This function handles DMA1 stream6 global interrupt. */
+/* ---------------------- End of USART2 init functions ---------------------- */
+
+/* --------------------- Begin of the callback functions -------------------- */
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+}
+
+void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
+{
+
+}
+
+/* ---------------------- End of the callback functions --------------------- */
+
+/* --------------------- Begin of the interrupt handlers -------------------- */
+
+void DMA1_Stream5_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_usart2_rx);
+}
+
 void DMA1_Stream6_IRQHandler(void)
 {
   HAL_DMA_IRQHandler(&hdma_usart2_tx);
@@ -132,29 +151,32 @@ void USART2_IRQHandler(void)
   HAL_UART_IRQHandler(&huart2);
 }
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-  
-}
+/* ---------------------- End of the interrupt handlers --------------------- */
 
-void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
+/**
+ * @brief This function is called by the HAL_UART_Init() function to configure the low level hardware resources
+ * 
+ * @param huart 
+ */
+
+void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 {
 
-}
-
-void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
-{
   GPIO_InitTypeDef GPIO_InitStruct;
 
-  if(uartHandle->Instance==USART2) {
+  if(huart->Instance==USART2) 
+  {
 
-    /* Peripheral clock enable */
+    // Peripheral clock enable
     __HAL_RCC_USART2_CLK_ENABLE();
   
-    /** USART2 GPIO Configuration    
-        PA2     ------> USART2_TX
-        PA3     ------> USART2_RX 
-    */
+    /**
+     * @brief USART2 GPIO Configuration
+     * 
+     * PA2     ------> USART2_TX
+     * PA3     ------> USART2_RX
+     */
+
     GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -167,18 +189,11 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
 void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 {
+  
   if(uartHandle->Instance==USART2)
   {
-
-    /* Peripheral clock disable */
     __HAL_RCC_USART2_CLK_DISABLE();
-  
-    /** USART2 GPIO Configuration    
-        PA2     ------> USART2_TX
-        PA3     ------> USART2_RX 
-    */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_2|GPIO_PIN_3);
-
   }
 }
 

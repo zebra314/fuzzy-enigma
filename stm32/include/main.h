@@ -30,26 +30,24 @@
   *
   ******************************************************************************
   */
-/* Define to prevent recursive inclusion -------------------------------------*/
+
+/* ------------------ Define to prevent recursive inclusion ----------------- */
 #ifndef __MAIN_H
 #define __MAIN_H
 
-/* Includes ------------------------------------------------------------------*/
+/* -------------------------------- Includes -------------------------------- */
 #include "system_config.h"
 #include "stm32f4xx_hal.h"
 #include "usart.h"
 #include "gpio.h"
 
-extern void SystemClock_Config(void);
-extern void Error_Handler(void);
+/**
+  * @}
+  */
 
 /**
   * @}
-  */ 
-
-/**
-  * @}
-*/ 
+*/
 
 #endif /* __MAIN_H */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
