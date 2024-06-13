@@ -51,7 +51,8 @@ void SystemClock_Config(void)
 
 void Error_Handler(void) {
   while(1) {
-    HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
+    HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+    HAL_Delay(100);
   }
 }
 

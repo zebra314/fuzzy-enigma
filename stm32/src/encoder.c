@@ -1,31 +1,58 @@
 #include "encoder.h"
 
+/* ---------------------------- Global variables ---------------------------- */
 TIM_HandleTypeDef htim2;
 static uint16_t newCount;
 static uint16_t prevCount;
+int count = 0;
+int len = 0;
 
-void Encoder_Init(void) {
-  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
+/* ----------------------- Begin of Interrupt Handler ----------------------- */
+
+/**
+ * @brief Hall Trigger detection callback in non blocking mode.
+ * 
+ * @param htim 
+ */
+
+void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim) 
+{
+  // if (htim->Instance == TIM2) 
+  // {
+  //   count = __HAL_TIM_GET_COUNTER(&htim2);
+  //   len = snprintf(output_buffer, sizeof(output_buffer), "TO: %d\n", count);
+  //   HAL_UART_Transmit_DMA(&huart2, (uint8_t*)output_buffer, len);
+  // }
+  count = 123;
+  len = snprintf(output_buffer, sizeof(output_buffer), "TO: %d\n", count);
+  HAL_UART_Transmit_DMA(&huart2, (uint8_t*)output_buffer, len);
 }
 
-uint16_t Encoder_Read() {
-  uint16_t val = __HAL_TIM_GET_COUNTER(&htim2);
-  return val >> 1;
+void TIM2_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim2);
 }
 
-Encoder_Status Encoder_Get_Status() {
-  newCount = Encoder_Read();
-  if (newCount != prevCount) {
-    if (newCount > prevCount) {
-      prevCount = newCount;
-      return Incremented;
-    } else {
-      prevCount = newCount;
-      return Decremented;
-    }
-  }
-  return Neutral;
-}
+/* ------------------------ End of Interrupt Handler ------------------------ */
+
+// Encoder_Status Encoder_Get_Status()
+// {
+//   newCount = Encoder_Read();
+//   if (newCount != prevCount)
+//   {
+//     if (newCount > prevCount)
+//     {
+//       prevCount = newCount;
+//       return Incremented;
+//     }
+//     else
+//     {
+//       prevCount = newCount;
+//       return Decremented;
+//     }
+//   }
+//   return Neutral;
+// }
 
 /**
   * @brief TIM2 Initialization Function (Encoder Mode)
@@ -33,7 +60,7 @@ Encoder_Status Encoder_Get_Status() {
   * @retval None
   */
 
-void Encoder_Config(void)
+void MX_TIM2_Encoder_Init(void)
 {
   TIM_Encoder_InitTypeDef sConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
@@ -54,12 +81,18 @@ void Encoder_Config(void)
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;     // Capture performed each time an edge is detected on the capture input
   sConfig.IC2Filter = 0;
   
-  HAL_TIM_Encoder_Init(&htim2, &sConfig);
+  if(HAL_TIM_Encoder_Init(&htim2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   
   HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig);
+
+  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
+  HAL_TIM_Base_Start_IT(&htim2);
 }
 
 /**

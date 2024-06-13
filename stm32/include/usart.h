@@ -43,9 +43,12 @@
 #include "stm32f4xx_hal.h"
 #include "main.h"
 
+#define OUTPUT_BUFFER_SIZE 100
+
 extern UART_HandleTypeDef huart2;
 extern DMA_HandleTypeDef hdma_usart2_rx;
 extern DMA_HandleTypeDef hdma_usart2_tx;
+extern char output_buffer[OUTPUT_BUFFER_SIZE];
 
 void MX_USART2_UART_Init(void);
 void MX_USART2_DMA_Init(void);

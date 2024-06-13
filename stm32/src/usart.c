@@ -39,6 +39,7 @@
 UART_HandleTypeDef huart2;
 DMA_HandleTypeDef hdma_usart2_rx;
 DMA_HandleTypeDef hdma_usart2_tx;
+char output_buffer[OUTPUT_BUFFER_SIZE];
 
 /* --------------------- Begin of USART2 init functions --------------------- */
 
@@ -124,12 +125,12 @@ void MX_USART2_DMA_Init(void)
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-  HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
+  HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_RESET);
 }
 
 void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
 {
-
+  HAL_GPIO_WritePin(LD4_GPIO_Port, LD4_Pin, GPIO_PIN_SET);
 }
 
 /* ---------------------- End of the callback functions --------------------- */

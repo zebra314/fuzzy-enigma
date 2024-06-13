@@ -5,7 +5,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define ENCODER_TIM                            htim2
+#include "usart.h"
+
+#define ENCODER_TIM htim2
 
 #define ENCODER_GPIO_PORT GPIOA
 #define ENCODER_GPIO_CH1 GPIO_PIN_0
@@ -20,9 +22,7 @@ typedef enum {
 } Encoder_Status;
 
 
-void Encoder_Config(void);
-void Encoder_Init(void);
-uint16_t Encoder_Read();
-Encoder_Status Encoder_Get_Status();
+void MX_TIM2_Encoder_Init(void);
+// Encoder_Status Encoder_Get_Status();
 
 #endif

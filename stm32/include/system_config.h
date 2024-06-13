@@ -8,8 +8,6 @@ void Error_Handler(void);
 
 /* Private define ------------------------------------------------------------*/
 
-#define OUTPUT_BUFFER_SIZE 100
-
 #define CS_I2C_SPI_Pin GPIO_PIN_3
 #define CS_I2C_SPI_GPIO_Port GPIOE
 #define PC14_OSC32_IN_Pin GPIO_PIN_14
