@@ -9,6 +9,7 @@
     "usbd_ioreq.h": "c",
     "usbd_def.h": "c",
     "gpio.h": "c",
-    "system_stm32f4xx.h": "c"
+    "system_stm32f4xx.h": "c",
+    "main.h": "c"
   }
 }
