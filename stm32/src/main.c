@@ -1,10 +1,5 @@
 #include "main.h"
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	HAL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
-}
-
 int main(void) 
 {
   HAL_Init();
@@ -13,12 +8,14 @@ int main(void)
   MX_USART2_DMA_Init();
   MX_USART2_UART_Init();
 
-  uint8_t outgoing[] = "Done\n";
-  int len = sizeof(outgoing) / sizeof(outgoing[0]);
+  char output_buffer[OUTPUT_BUFFER_SIZE];
+  int len;
+  int i = 123;
+  len = snprintf(output_buffer, sizeof(output_buffer), "TO: %d\n", i);
 
   while (1) 
   {
-    HAL_UART_Transmit_DMA(&huart2, outgoing, len);    
+    HAL_UART_Transmit_DMA(&huart2, (uint8_t*)output_buffer, len);    
     HAL_Delay(100);
   }
 }
