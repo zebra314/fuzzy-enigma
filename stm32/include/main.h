@@ -36,12 +36,15 @@
 #define __MAIN_H
 
 /* -------------------------------- Includes -------------------------------- */
+
+#include <stdio.h>
+#include <string.h>
+
 #include "system_config.h"
 #include "stm32f4xx_hal.h"
 #include "usart.h"
 #include "gpio.h"
-#include <stdio.h>
-#include <string.h>
+#include "encoder.h"
 
 /**
   * @}
